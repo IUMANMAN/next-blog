@@ -24,8 +24,8 @@ async function initUser() {
     console.log('Connected to MongoDB');
 
     // 指定用户名和密码
-    const username = 'my0sterick';
-    const password = 'esHzRwFj3HLCjF';
+    const username = '**********';
+    const password = '**********';
 
     // 检查用户是否已存在
     const existingUser = await User.findOne({ username });
