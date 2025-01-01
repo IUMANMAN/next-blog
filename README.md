@@ -51,7 +51,17 @@ NEXTAUTH_SECRET=你的密钥
 NODE_ENV=development
 ```
 
-4. **运行开发服务器**
+4. **初始化用户**
+```bash
+# 运行初始化脚本创建管理员账号
+node initUser.js
+
+# 默认管理员账号
+username: **********
+password: **********
+```
+
+5. **运行开发服务器**
 ```bash
 npm run dev
 # 或
