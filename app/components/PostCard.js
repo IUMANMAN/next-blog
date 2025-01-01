@@ -1,59 +1,76 @@
 'use client';
 
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
-export default function PostCard({ title, description, date, id, content }) {
+export default function PostCard({ title, description, date, id, content, keywords }) {
+  const { data: session } = useSession();
+  
   // 优化预览文本处理
   const getPlainText = (markdown) => {
     if (!markdown) return '';
     return markdown
-      // 移除图片
       .replace(/!\[.*?\]\(.*?\)/g, '')
-      // 移除链接，保留链接文字
       .replace(/\[([^\]]+)\]\(.*?\)/g, '$1')
-      // 移除标题符号
       .replace(/^#+\s+/gm, '')
-      // 移除强调符号
       .replace(/[*_`~]/g, '')
-      // 移除列表符号
       .replace(/^[-+*]\s+/gm, '')
-      // 移除引用符号
       .replace(/^>\s+/gm, '')
-      // 移除代码块
       .replace(/```[\s\S]*?```/g, '')
-      // 将多个换行替换为一个空格
       .replace(/\n+/g, ' ')
-      // 移除多余空格
       .replace(/\s+/g, ' ')
       .trim();
   };
 
-  // 生成预览文本，优先使用 description
   const previewText = description || (content ? getPlainText(content).substring(0, 150) + '...' : '');
 
   return (
-    <article className="group py-8 first:pt-0 last:pb-0">
+    <article className="py-8 first:pt-0 last:pb-0">
       <Link 
         href={`/posts/${id}`} 
-        className="block group relative p-4 -mx-4 rounded-lg
-          transition-all duration-300 ease-out
-          hover:bg-white/50 hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]
-          hover:translate-y-[-2px]"
+        className="block group relative p-6 -mx-4 rounded-lg
+          transform transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1.0)]
+          hover:bg-gradient-to-br hover:from-white/90 hover:to-white/50
+          hover:shadow-[0_8px_16px_rgb(0,0,0,0.06)]
+          hover:scale-[1.005] hover:-translate-y-[2px]"
       >
-        <h2 className="text-xl font-medium text-lesswrong-text group-hover:text-lesswrong-link
-          transition-colors duration-300">
-          {title}
-        </h2>
-        <div className="mt-2 text-sm text-lesswrong-meta transition-colors duration-300
-          group-hover:text-lesswrong-meta/80">
-          <time>{date}</time>
+        <div className="text-center mb-4">
+          <h2 className="text-2xl font-medium text-lesswrong-text 
+            transition-colors duration-200 ease-out
+            group-hover:text-lesswrong-link">
+            {title}
+          </h2>
+          <div className="mt-2 text-base text-lesswrong-meta flex items-center justify-center gap-2
+            transition-colors duration-200 group-hover:text-lesswrong-meta/80">
+            <time>{date}</time>
+            <span>·</span>
+            <span>{session?.user?.name || 'Manman'}</span>
+          </div>
+          {keywords?.length > 0 && (
+            <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
+              {keywords.map((keyword, index) => (
+                <span 
+                  key={index}
+                  className="px-2 py-1 text-sm bg-lesswrong-green-light text-lesswrong-link
+                    rounded-full transition-colors duration-200"
+                >
+                  {keyword}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         {previewText && (
-          <p className="mt-3 text-base text-lesswrong-text/90 line-clamp-2 leading-relaxed
-            transition-colors duration-300 group-hover:text-lesswrong-text">
+          <p className="mt-4 text-lg text-lesswrong-text/90 line-clamp-2 leading-relaxed
+            transition-colors duration-200 ease-out
+            group-hover:text-lesswrong-text">
             {previewText}
           </p>
         )}
+        <div className="absolute inset-0 rounded-lg border border-transparent
+          transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1.0)]
+          group-hover:border-lesswrong-border/10" 
+        />
       </Link>
     </article>
   );

@@ -1,58 +1,88 @@
 'use client';
 
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export default function PostActions({ post }) {
-  const { data: session, status } = useSession();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { data: session } = useSession();
   const router = useRouter();
 
-  console.log('Client Auth Debug:', {
-    status,
-    session,
-    hasUser: !!session?.user
-  });
+  const handleEdit = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (post.id) {
+      router.push(`/posts/${post.id}/edit`);
+    }
+  };
 
-  const handleDelete = async () => {
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!post.id) return;
+    
     if (!confirm('确定要删除这篇文章吗？')) {
       return;
     }
 
+    setIsDeleting(true);
     try {
       const res = await fetch(`/api/posts/${post.id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         credentials: 'include',
-        cache: 'no-store'
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || '删除失败');
+        const error = await res.json();
+        throw new Error(error.message || '删除失败');
       }
 
       router.push('/');
       router.refresh();
     } catch (error) {
-      alert(error.message || '删除失败，请稍后重试');
+      console.error('Delete error:', error);
+      alert(error.message || '删除失败，请重试');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  if (!session?.user) return null;
+  // 检查用户是否已登录且是作者
+  const isAuthor = session?.user?.username === post.author?.username;
+
+  if (!isAuthor) {
+    return null;
+  }
 
   return (
-    <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+    <div 
+      className="flex items-center gap-4"
+      onClick={(e) => e.stopPropagation()} // 阻止事件冒泡
+    >
       <button
-        onClick={() => router.push(`/posts/${post.id}/edit`)}
-        className="text-sm text-lesswrong-meta hover:text-lesswrong-link transition-colors duration-200"
+        type="button"
+        onClick={handleEdit}
+        className="px-3 py-1.5 text-sm font-medium text-lesswrong-link 
+          hover:text-lesswrong-link-hover transition-colors duration-200
+          rounded-md hover:bg-lesswrong-green-light"
       >
         编辑
       </button>
-      <span className="text-lesswrong-meta">·</span>
       <button
+        type="button"
         onClick={handleDelete}
-        className="text-sm text-lesswrong-meta hover:text-red-500 transition-colors duration-200"
+        disabled={isDeleting}
+        className="px-3 py-1.5 text-sm font-medium text-red-500 
+          hover:text-red-600 transition-colors duration-200
+          rounded-md hover:bg-red-50 disabled:opacity-50 
+          disabled:cursor-not-allowed"
       >
-        删除
+        {isDeleting ? '删除中...' : '删除'}
       </button>
     </div>
   );

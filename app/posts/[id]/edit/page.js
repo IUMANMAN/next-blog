@@ -8,13 +8,14 @@ import PostEditor from '@/app/components/PostEditor';
 export default function EditPost({ params }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [keywords, setKeywords] = useState([]);
+  const [newKeyword, setNewKeyword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push('/login');
+      router.push('/api/auth/signin');
     },
   });
 
@@ -33,6 +34,7 @@ export default function EditPost({ params }) {
         console.log('Fetched post:', data);
         setTitle(data.title || '');
         setContent(data.content || '');
+        setKeywords(data.keywords || []);
       } catch (error) {
         console.error('Error fetching post:', error);
         setError('加载文章失败，请稍后重试');
@@ -42,16 +44,29 @@ export default function EditPost({ params }) {
     fetchPost();
   }, [params.id, status]);
 
+  const addKeyword = () => {
+    if (newKeyword.trim() && !keywords.includes(newKeyword.trim())) {
+      setKeywords([...keywords, newKeyword.trim()]);
+      setNewKeyword('');
+    }
+  };
+
+  const removeKeyword = (indexToRemove) => {
+    setKeywords(keywords.filter((_, index) => index !== indexToRemove));
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addKeyword();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) {
-      setError('标题和内容不能为空');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
     try {
       const res = await fetch(`/api/posts/${params.id}`, {
         method: 'PUT',
@@ -59,7 +74,11 @@ export default function EditPost({ params }) {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify({ title, content })
+        body: JSON.stringify({
+          title,
+          content,
+          keywords,
+        })
       });
 
       if (!res.ok) {
@@ -70,9 +89,10 @@ export default function EditPost({ params }) {
       router.push(`/posts/${params.id}`);
       router.refresh();
     } catch (error) {
-      setError(error.message || '更新失败，请稍后重试');
+      console.error('Error:', error);
+      alert('更新失败，请重试');
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -85,12 +105,6 @@ export default function EditPost({ params }) {
       <div className="mb-8">
         <h1 className="text-2xl font-medium text-lesswrong-text">编辑文章</h1>
       </div>
-
-      {error && (
-        <div className="mb-6 p-4 text-sm text-red-600 bg-red-50 rounded-md">
-          {error}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -111,6 +125,48 @@ export default function EditPost({ params }) {
           onChange={setContent}
         />
 
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2 mb-2">
+            {keywords.map((keyword, index) => (
+              <span 
+                key={index}
+                className="px-3 py-1.5 bg-lesswrong-green-light text-lesswrong-link
+                  rounded-full flex items-center gap-2 group"
+              >
+                {keyword}
+                <button
+                  type="button"
+                  onClick={() => removeKeyword(index)}
+                  className="w-4 h-4 rounded-full flex items-center justify-center
+                    hover:bg-lesswrong-link/10 transition-colors duration-200"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newKeyword}
+              onChange={(e) => setNewKeyword(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="添加关键词（回车确认）"
+              className="flex-1 px-3 py-1.5 border border-lesswrong-border/30 rounded-lg
+                bg-transparent focus:border-lesswrong-link/50 focus:outline-none
+                transition-colors duration-200"
+            />
+            <button
+              type="button"
+              onClick={addKeyword}
+              className="px-4 py-1.5 bg-lesswrong-green-light text-lesswrong-link
+                rounded-lg hover:bg-lesswrong-green-border transition-colors duration-200"
+            >
+              添加
+            </button>
+          </div>
+        </div>
+
         <div className="flex items-center justify-end gap-4">
           <button
             type="button"
@@ -122,12 +178,12 @@ export default function EditPost({ params }) {
           </button>
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isSubmitting}
             className="px-6 py-2 text-sm font-medium text-white bg-lesswrong-link rounded-md
               hover:bg-lesswrong-link-hover transition-colors duration-200
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? '保存中...' : '保存'}
+            {isSubmitting ? '保存中...' : '保存'}
           </button>
         </div>
       </form>

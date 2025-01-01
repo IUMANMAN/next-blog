@@ -3,12 +3,61 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 249, 250, 251;
+  --lesswrong-bg: rgb(250, 249, 247);
+  --lesswrong-text: rgb(41, 41, 41);
+  --lesswrong-meta: rgb(100, 100, 100);
+  --lesswrong-link: rgb(40, 135, 84);
+  --lesswrong-link-hover: rgb(34, 114, 71);
+  --lesswrong-border: rgb(230, 230, 230);
+  --lesswrong-nav-bg: rgba(250, 249, 247, 0.8);
+  --lesswrong-green-light: rgb(236, 246, 240);
+  --lesswrong-green-border: rgb(209, 231, 221);
 }
 
 body {
-  background-color: rgb(var(--background-rgb));
-  color: rgb(var(--foreground-rgb));
+  background-color: var(--lesswrong-bg);
+  color: var(--lesswrong-text);
+  min-height: 100vh;
+}
+
+/* 修改渐变背景效果 */
+.gradient-bg {
+  background: linear-gradient(
+    180deg,
+    var(--lesswrong-bg) 0%,
+    rgb(252, 251, 249) 100%
+  );
+}
+
+/* 优化滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--lesswrong-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--lesswrong-meta);
+}
+
+@layer components {
+  /* 左侧边栏响应式 */
+  @media (max-width: 1280px) {
+    .latest-posts-sidebar {
+      display: none;
+    }
+    
+    .main-content {
+      margin-left: 0;
+    }
+  }
 }
   

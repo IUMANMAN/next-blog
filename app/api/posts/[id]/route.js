@@ -4,72 +4,68 @@ import Post from '@/models/Post';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { cookies } from 'next/headers';
+import mongoose from 'mongoose';
 
 export async function GET(request, { params }) {
   try {
     await connectDB();
-    const post = await Post.findById(params.id)
-      .populate('author', 'username');
-
-    if (!post) {
-      return NextResponse.json(
-        { error: '文章不存在' },
-        { status: 404 }
-      );
+    
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json({ error: '无效的文章ID' }, { status: 400 });
     }
 
-    return NextResponse.json(post);
+    const post = await Post.findById(params.id)
+      .populate('author', 'username')
+      .lean();
+
+    if (!post) {
+      return NextResponse.json({ error: '文章不存在' }, { status: 404 });
+    }
+
+    // 转换为安全的 JSON 格式
+    const safePost = {
+      ...post,
+      _id: post._id.toString(),
+      author: post.author ? {
+        ...post.author,
+        _id: post.author._id.toString()
+      } : null,
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+    };
+
+    return NextResponse.json(safePost);
   } catch (error) {
     console.error('Error fetching post:', error);
-    return NextResponse.json(
-      { error: '获取文章失败' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: '获取文章失败' }, { status: 500 });
   }
 }
 
-export async function PUT(request, { params }) {
+export async function PUT(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    
-    console.log('Auth Debug:', {
-      hasSession: !!session,
-      sessionData: session,
-      cookies: request.cookies
-    });
-
-    if (!session?.user?.id) {
-      console.log('Auth failed:', { session });
-      return NextResponse.json(
-        { error: '未登录' },
-        { status: 401 }
-      );
+    if (!session) {
+      return new Response('Unauthorized', { status: 401 });
     }
 
-    const { title, content } = await request.json();
     await connectDB();
+    const { title, content, keywords } = await req.json();
 
     const post = await Post.findById(params.id);
     if (!post) {
-      return NextResponse.json(
-        { error: '文章不存在' },
-        { status: 404 }
-      );
+      return new Response('Post not found', { status: 404 });
     }
 
-    const updatedPost = await Post.findByIdAndUpdate(
-      params.id,
-      { title, content },
-      { new: true }
-    );
+    // 更新文章
+    post.title = title;
+    post.content = content;
+    post.keywords = keywords;
+    await post.save();
 
-    return NextResponse.json(updatedPost);
+    return Response.json(post);
   } catch (error) {
-    console.error('Update error:', error);
-    return NextResponse.json(
-      { error: '更新失败' },
-      { status: 500 }
-    );
+    console.error('Error in PUT /api/posts/[id]:', error);
+    return new Response('Internal Server Error', { status: 500 });
   }
 }
 
