@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { writeFile, unlink, readdir } from 'fs/promises';
 import path from 'path';
 
+// 新的配置方式
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // 允许的图片类型
 const ALLOWED_TYPES = [
   'image/jpeg',
@@ -111,10 +115,4 @@ export async function POST(request) {
       { status: 500 }
     );
   }
-}
-
-export const config = {
-  api: {
-    bodyParser: false
-  }
-}; 
+} 
