@@ -89,25 +89,23 @@ manman-blog/
 
 ## 部署指南
 
-1. **准备环境变量**
+1. **服务器部署**
 ```bash
-# .env.production
-NODE_ENV=production
-PORT=3000
-MONGODB_URI=你的MongoDB连接串
-NEXTAUTH_URL=你的域名
-NEXTAUTH_SECRET=你的密钥
-```
+# 全局安装 PM2
+npm install -g pm2
 
-2. **构建和启动**
-```bash
 # 安装依赖并构建
 npm install && npm run build
 
 # 使用 PM2 启动
-npm run deploy
-```
+pm2 start ecosystem.config.js
 
+# 查看运行状态
+pm2 status
+
+# 查看日志
+pm2 logs manman-blog
+```
 
 ## 环境要求
 
