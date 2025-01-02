@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-lesswrong-bg text-lesswrong-text min-h-screen;
+    font-size: 1rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
 :root {
   --lesswrong-bg: rgb(250, 249, 247);
   --lesswrong-text: rgb(41, 41, 41);
@@ -12,12 +28,6 @@
   --lesswrong-nav-bg: rgba(250, 249, 247, 0.8);
   --lesswrong-green-light: rgb(236, 246, 240);
   --lesswrong-green-border: rgb(209, 231, 221);
-}
-
-body {
-  background-color: var(--lesswrong-bg);
-  color: var(--lesswrong-text);
-  min-height: 100vh;
 }
 
 /* 修改渐变背景效果 */
@@ -50,7 +60,7 @@ body {
 
 @layer components {
   /* 左侧边栏响应式 */
-  @media (max-width: 1280px) {
+  @media (max-width: 1536px) {
     .latest-posts-sidebar {
       display: none;
     }

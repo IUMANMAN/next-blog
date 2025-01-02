@@ -2,9 +2,9 @@ module.exports = {
   apps: [
     {
       name: 'manman-blog',
-      script: './node_modules/next/dist/bin/next',
-      args: 'start -p 3000',
-      cwd: './',  // 当前工作目录
+      script: 'node_modules/next/dist/bin/next',
+      args: 'start',
+      cwd: '/opt/1panel/apps/manman-blog',
       instances: 'max',
       exec_mode: 'cluster',
       autorestart: true,

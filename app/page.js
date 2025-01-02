@@ -5,23 +5,29 @@ import BackToTop from './components/BackToTop';
 import LatestPosts from './components/LatestPosts';
 import Pagination from './components/Pagination';
 import KeywordCloud from './components/KeywordCloud';
+import { Suspense } from 'react';
 
 const POSTS_PER_PAGE = 10;
 
-export default async function Home({ searchParams }) {
+// 分离数据获取逻辑
+async function getPosts() {
   await connectDB();
-  const page = Number(searchParams.page) || 1;
-  
-  // 获取总文章数
+  const page = 1;
   const totalPosts = await Post.countDocuments();
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
-  
-  // 获取当前页的文章
+  const validPage = Math.max(1, Math.min(page, totalPages));
+
   const posts = await Post.find()
     .sort({ createdAt: -1 })
-    .skip((page - 1) * POSTS_PER_PAGE)
+    .skip((validPage - 1) * POSTS_PER_PAGE)
     .limit(POSTS_PER_PAGE)
     .lean();
+
+  return { posts, totalPages, validPage };
+}
+
+export default async function Home() {
+  const { posts, totalPages, validPage } = await getPosts();
 
   const simplifiedPosts = posts.map(post => ({
     id: post._id.toString(),
@@ -29,7 +35,7 @@ export default async function Home({ searchParams }) {
     content: post.content,
     description: post.description,
     createdAt: post.createdAt.toISOString(),
-    date: post.createdAt.toLocaleDateString('zh-CN'),
+    date: new Date(post.createdAt).toISOString(),
     keywords: post.keywords || [],
   }));
 
@@ -61,19 +67,20 @@ export default async function Home({ searchParams }) {
       </div>
 
       <main className="max-w-4xl mx-auto px-4 py-8 main-content">
-        <div className="divide-y divide-lesswrong-border">
-          {simplifiedPosts.map(post => (
-            <PostCard key={post.id} {...post} />
-          ))}
-        </div>
+        <Suspense fallback={<div>Loading...</div>}>
+          <div className="divide-y divide-lesswrong-border">
+            {simplifiedPosts.map(post => (
+              <PostCard key={post.id} {...post} />
+            ))}
+          </div>
 
-        {/* 使用分页组件 */}
-        {totalPages > 1 && (
-          <Pagination 
-            currentPage={page} 
-            totalPages={totalPages} 
-          />
-        )}
+          {totalPages > 1 && (
+            <Pagination 
+              currentPage={validPage} 
+              totalPages={totalPages} 
+            />
+          )}
+        </Suspense>
         <BackToTop />
       </main>
     </div>

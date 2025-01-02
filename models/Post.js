@@ -20,8 +20,17 @@ const postSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true,
-  toJSON: { getters: true },
-  toObject: { getters: true }
+  toJSON: { 
+    getters: true,
+    transform: function(doc, ret) {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      delete ret.__v;
+      if (ret.createdAt) ret.createdAt = ret.createdAt.toISOString();
+      if (ret.updatedAt) ret.updatedAt = ret.updatedAt.toISOString();
+      return ret;
+    }
+  }
 });
 
 // 添加索引以提高查询性能

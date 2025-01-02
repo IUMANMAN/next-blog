@@ -5,8 +5,17 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  important: true,
   theme: {
     extend: {
+      fontSize: {
+        'base': '1rem',
+        'lg': '1.125rem',
+        'xl': '1.25rem',
+        '2xl': '1.5rem',
+        '3xl': '1.875rem',
+        '4xl': '2.25rem',
+      },
       colors: {
         'lesswrong-bg': 'var(--lesswrong-bg)',
         'lesswrong-text': 'var(--lesswrong-text)',
@@ -17,6 +26,13 @@ module.exports = {
         'lesswrong-nav-bg': 'var(--lesswrong-nav-bg)',
         'lesswrong-green-light': 'var(--lesswrong-green-light)',
         'lesswrong-green-border': 'var(--lesswrong-green-border)',
+      },
+      screens: {
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
       },
       typography: (theme) => ({
         DEFAULT: {

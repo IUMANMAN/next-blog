@@ -13,46 +13,39 @@ import { Suspense } from 'react';
 import PostLoading from './loading';
 import ErrorBoundary from '@/app/components/ErrorBoundary';
 
-export async function generateMetadata({ params }) {
-  await connectDB();
-  let post;
-  
+export async function generateMetadata({ params: { id } }) {
   try {
-    if (mongoose.Types.ObjectId.isValid(params.id)) {
-      post = await Post.findById(params.id);
-    } else {
-      post = await Post.findOne({ slug: params.id });
+    await connectDB();
+    const post = await Post.findById(id).lean();
+    
+    if (!post) {
+      return {
+        title: '文章不存在',
+      };
     }
+
+    return {
+      title: post.title,
+      description: post.content.slice(0, 200),
+      keywords: post.keywords,
+    };
   } catch (error) {
-    console.error('Error fetching post:', error);
+    console.error('Error generating metadata:', error);
     return {
-      title: '文章未找到',
-      description: '请求的文章不存在'
+      title: '加载出错',
     };
   }
-
-  if (!post) {
-    return {
-      title: '文章未找到',
-      description: '请求的文章不存在'
-    };
-  }
-
-  return {
-    title: post.title,
-    description: post.description || post.content.substring(0, 160)
-  };
 }
 
 export const revalidate = 3600; // 1小时缓存
 
-export default async function PostPage({ params }) {
+export default async function PostPage({ params: { id } }) {
   try {
     const session = await getServerSession(authOptions);
     await connectDB();
     
     // 获取当前文章
-    const currentPost = await Post.findById(params.id)
+    const currentPost = await Post.findById(id)
       .populate('author', 'username')
       .lean();
 

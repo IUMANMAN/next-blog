@@ -39,9 +39,9 @@ export default async function RootLayout({ children }) {
   const { navPosts, allKeywords } = await getNavData();
 
   return (
-    <html lang="zh">
+    <html lang="zh-CN">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
         <meta httpEquiv="x-dns-prefetch-control" content="on" />
         <link rel="dns-prefetch" href="https://manziqiang.com" />
         <link
@@ -57,7 +57,7 @@ export default async function RootLayout({ children }) {
             posts={navPosts}
             keywords={allKeywords}
           />
-          <div className="min-h-screen flex flex-col">
+          <div className="min-h-screen flex flex-col w-full">
             <div className="flex-1">
               {children}
             </div>

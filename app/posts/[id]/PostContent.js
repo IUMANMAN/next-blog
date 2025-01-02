@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 
-// 更新 Markdown 组件样式
-const MarkdownComponents = {
+// 缓存 Markdown 组件配置
+const markdownComponents = {
   h1: ({children}) => {
     const id = typeof children === 'string' ? children : '';
     return (
@@ -40,23 +40,28 @@ const MarkdownComponents = {
       </h3>
     );
   },
-  p: ({children, node}) => {
+  p: memo(({ node, children, ...props }) => {
     // 检查是否只包含图片
-    const hasOnlyImage = node?.children?.[0]?.type === 'element' && 
-                        node.children[0].tagName === 'img';
-
-    // 如果只包含图片，不添加额外的段落包装
+    const hasOnlyImage = node?.children?.length === 1 && 
+      node.children[0].type === 'element' && 
+      node.children[0].tagName === 'img';
+    
+    // 如果只包含图片，返回 Fragment
     if (hasOnlyImage) {
-      return children;
+      return <>{children}</>;
     }
-
-    // 普通段落
+    
+    // 否则返回普通段落
     return (
-      <p className="text-[1.3rem] leading-[1.9] tracking-[0.01em] text-lesswrong-text/90 my-6 font-[380]">
+      <p 
+        className="text-[1.3rem] leading-[1.9] tracking-[0.01em] 
+          text-lesswrong-text/90 my-6 font-[380]"
+        {...props}
+      >
         {children}
       </p>
     );
-  },
+  }),
   ul: ({children}) => (
     <ul className="list-disc pl-8 my-6 space-y-3 text-[1.3rem] leading-[1.9] text-lesswrong-text/90">
       {children}
@@ -88,15 +93,16 @@ const MarkdownComponents = {
       {children}
     </a>
   ),
-  img: ({src, alt}) => (
-    <div className="my-10">
-      <img 
-        src={src} 
-        alt={alt} 
+  img: memo(({ src, alt, ...props }) => (
+    <span className="block my-10">
+      <img
+        src={src}
+        alt={alt}
         className="rounded-lg shadow-md mx-auto max-w-full h-auto"
+        loading="lazy"
       />
-    </div>
-  ),
+    </span>
+  )),
   hr: () => (
     <hr className="my-12 border-lesswrong-border" />
   ),
@@ -294,7 +300,7 @@ export default function PostContent({ post, actions }) {
         <div className="prose prose-lg max-w-none mx-auto" style={{ maxWidth: '780px' }}>
           <ReactMarkdown 
             remarkPlugins={[remarkGfm]}
-            components={MarkdownComponents}
+            components={markdownComponents}
           >
             {post.content}
           </ReactMarkdown>

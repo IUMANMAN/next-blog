@@ -21,7 +21,7 @@ export default function MobileMenu({ posts, keywords }) {
     <>
       <button
         onClick={toggleMenu}
-        className="lg:hidden p-2 text-lesswrong-text hover:text-lesswrong-link
+        className="xl:hidden p-2 text-lesswrong-text hover:text-lesswrong-link
           transition-colors duration-200"
         aria-label="打开菜单"
       >
@@ -46,7 +46,7 @@ export default function MobileMenu({ posts, keywords }) {
             className="absolute inset-0 bg-black/20 backdrop-blur-sm"
             onClick={toggleMenu}
           />
-          <div className="absolute left-0 top-0 bottom-0 w-80 bg-white shadow-lg
+          <div className="absolute left-0 top-0 bottom-0 w-[min(80vw,320px)] bg-white shadow-lg
             overflow-y-auto overscroll-contain">
             <div className="sticky top-0 bg-white/80 backdrop-blur-sm z-10 
               flex items-center justify-between px-6 py-4 border-b border-lesswrong-border/10">
