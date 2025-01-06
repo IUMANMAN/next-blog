@@ -4,17 +4,19 @@
 
 @layer base {
   html {
-    font-size: 16px !important;
+    font-size: 16px;
     -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
   }
 
   body {
     @apply bg-lesswrong-bg text-lesswrong-text min-h-screen;
-    font-size: 1rem;
+    font-size: 16px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    zoom: 1;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
   }
 }
 

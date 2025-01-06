@@ -1,16 +1,16 @@
 # ManMan Blog
 
-一个使用 Next.js 13+ 构建的现代化博客系统，支持 Markdown 编写，实时预览，图片上传等功能。
+一个使用 Next.js 14 构建的现代化博客系统，支持 Markdown 编写，实时预览，图片上传等功能。
 
 ## 技术栈
 
-- **前端框架**: Next.js 13+ (App Router)
+- **前端框架**: Next.js 14 (App Router)
 - **样式方案**: TailwindCSS + CSS Variables
 - **内容渲染**: React-Markdown + Remark-GFM
 - **编辑器**: @uiw/react-md-editor
 - **认证系统**: NextAuth.js
 - **数据库**: MongoDB + Mongoose
-- **部署**: PM2 + OpenResty
+- **部署**: Nginx + Forever
 
 ## 特性
 
@@ -35,46 +35,43 @@ cd manman-blog
 2. **安装依赖**
 ```bash
 npm install
-# 或
-yarn install
 ```
 
 3. **配置环境变量**
 ```bash
-# 复制环境变量示例文件
-cp .env.example .env.local
-
-# 编辑 .env.local，填入以下配置
+# 开发环境 (.env.local)
+NODE_ENV=development
 MONGODB_URI=你的MongoDB连接串
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=你的密钥
-NODE_ENV=development
+
+# 生产环境 (.env.production)
+NODE_ENV=production
+MONGODB_URI=你的MongoDB连接串
+NEXTAUTH_URL=你的域名
+NEXTAUTH_SECRET=你的密钥
 ```
 
-4. **初始化用户**
-```bash
-# 运行初始化脚本创建管理员账号
-node initUser.js
-
-# 默认管理员账号
-username: **********
-password: **********
-```
-
-5. **运行开发服务器**
+4. **开发环境运行**
 ```bash
 npm run dev
-# 或
-yarn dev
 ```
 
-访问 [http://localhost:3000](http://localhost:3000) 查看结果。
+5. **生产环境部署**
+```bash
+# 构建项目
+npm run build
+
+# 使用 forever 启动
+npm install -g forever
+forever start -c "npm start" ./
+```
 
 ## 项目结构
 
 ```
 manman-blog/
-├── app/                    # Next.js 13 App Router
+├── app/                    # Next.js 14 App Router
 │   ├── api/               # API 路由
 │   │   ├── auth/         # 认证相关
 │   │   ├── posts/        # 文章 CRUD
@@ -87,31 +84,31 @@ manman-blog/
 └── public/              # 静态资源
 ```
 
-## 部署指南
+## Nginx 配置
 
-1. **服务器部署**
-```bash
-# 全局安装 PM2
-npm install -g pm2
-
-# 安装依赖并构建
-npm install && npm run build
-
-# 使用 PM2 启动
-pm2 start ecosystem.config.js
-
-# 查看运行状态
-pm2 status
-
-# 查看日志
-pm2 logs manman-blog
+```nginx
+server {
+    listen 80;
+    server_name manziqiang.com www.manziqiang.com;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
 ```
 
 ## 环境要求
 
 - Node.js >= 18.0.0
 - MongoDB >= 4.4
-- PM2 (生产环境)
+- Nginx
 
 ## 开发指南
 
@@ -147,4 +144,5 @@ MIT License
 ## 作者
 
 - ManMan
+- Email: my0sterick@gmail.com
 - GitHub: [@IUMANMAN](https://github.com/IUMANMAN)

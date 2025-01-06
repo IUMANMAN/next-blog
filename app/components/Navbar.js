@@ -90,17 +90,19 @@ export default function Navbar({ isLoggedIn, posts, keywords }) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-sm
-      border-b border-lesswrong-border/10 z-40">
+    <header className={`fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-sm
+      border-b border-lesswrong-border/10 z-40 transform transition-transform duration-200
+      ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+    >
       <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <MobileMenu posts={posts} keywords={keywords} />
-          <Link href="/" className="text-2xl font-bold text-lesswrong-text">
+          <Link href="/" className="text-lg sm:text-xl font-bold text-lesswrong-text">
             ManMan Blog
           </Link>
         </div>
 
-        <div className="flex items-center gap-4 sm:gap-6">
+        <div className="flex items-center">
           <div className="relative flex items-center" ref={searchRef}>
             <button
               onClick={toggleSearch}
@@ -108,7 +110,7 @@ export default function Navbar({ isLoggedIn, posts, keywords }) {
                 transition-colors duration-200"
             >
               <svg 
-                className="w-6 h-6"
+                className="w-5 h-5"
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -123,7 +125,7 @@ export default function Navbar({ isLoggedIn, posts, keywords }) {
             </button>
             <div className={`absolute right-0 top-1/2 -translate-y-1/2
               transition-all duration-300 ease-out origin-right
-              ${isSearchOpen ? 'w-64 opacity-100 scale-x-100' : 'w-0 opacity-0 scale-x-0'}`}
+              ${isSearchOpen ? 'w-[180px] sm:w-64 opacity-100 scale-x-100' : 'w-0 opacity-0 scale-x-0'}`}
             >
               <form onSubmit={handleSearch} className="relative">
                 <input
@@ -131,7 +133,7 @@ export default function Navbar({ isLoggedIn, posts, keywords }) {
                   placeholder="搜索文章..."
                   value={searchQuery}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 text-sm bg-white/80 backdrop-blur-sm
+                  className="w-full pl-8 pr-3 py-1.5 text-sm bg-white/80 backdrop-blur-sm
                     border border-lesswrong-border rounded-full
                     focus:outline-none focus:ring-0 focus:border-lesswrong-link
                     transition-colors duration-200
@@ -139,7 +141,7 @@ export default function Navbar({ isLoggedIn, posts, keywords }) {
                   style={{ WebkitAppearance: 'none' }}
                 />
                 <svg 
-                  className="absolute left-3 top-2.5 h-4 w-4 text-lesswrong-meta"
+                  className="absolute left-2.5 top-2 h-4 w-4 text-lesswrong-meta"
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
@@ -156,18 +158,19 @@ export default function Navbar({ isLoggedIn, posts, keywords }) {
           </div>
 
           {session?.user && (
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center ml-2">
               <Link
                 href="/posts/new"
-                className="px-4 sm:px-5 py-2 text-base font-medium text-white 
+                className="px-3 sm:px-4 py-1.5 text-sm font-medium text-white 
                   hover:bg-lesswrong-link/90 rounded-md bg-lesswrong-link
-                  transition-colors duration-200"
+                  transition-colors duration-200 whitespace-nowrap"
               >
-                写文章
+                <span className="hidden sm:inline">写文章</span>
+                <span className="sm:hidden">写</span>
               </Link>
               <button
                 onClick={handleSignOut}
-                className="px-4 sm:px-5 py-2 text-base text-lesswrong-meta/90 
+                className="px-3 py-1.5 text-sm text-lesswrong-meta/90 
                   hover:text-lesswrong-text transition-colors duration-200"
               >
                 退出

@@ -103,10 +103,7 @@ export default async function PostPage({ params: { id } }) {
             <article>
               <PostContent post={simplifiedPost} />
             </article>
-            <PostNavigation 
-              prevPost={simplifiedPrevPost}
-              nextPost={simplifiedNextPost}
-            />
+            <PostNavigation navigation={simplifiedPost.navigation} />
             <BackToTop />
           </Suspense>
         </ErrorBoundary>

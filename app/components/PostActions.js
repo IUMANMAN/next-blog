@@ -9,6 +9,14 @@ export default function PostActions({ post }) {
   const { data: session } = useSession();
   const router = useRouter();
 
+  // 检查用户是否已登录且是作者 - 使用 username 比较
+  const isAuthor = session?.user?.username === post?.author?.username;
+
+  // 如果不是作者，不显示任何内容
+  if (!isAuthor) {
+    return null;
+  }
+
   const handleEdit = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -21,7 +29,10 @@ export default function PostActions({ post }) {
     e.preventDefault();
     e.stopPropagation();
     
-    if (!post.id) return;
+    if (!post.id) {
+      console.log('No post ID found');
+      return;
+    }
     
     if (!confirm('确定要删除这篇文章吗？')) {
       return;
@@ -29,6 +40,12 @@ export default function PostActions({ post }) {
 
     setIsDeleting(true);
     try {
+      console.log('Deleting post:', {
+        postId: post.id,
+        postAuthor: post.author?.username,
+        sessionUser: session?.user?.username
+      });
+      
       const res = await fetch(`/api/posts/${post.id}`, {
         method: 'DELETE',
         headers: {
@@ -37,9 +54,16 @@ export default function PostActions({ post }) {
         credentials: 'include',
       });
 
+      const data = await res.text();
+      console.log('Delete response:', {
+        status: res.status,
+        data: data
+      });
+
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || '删除失败');
+        throw new Error(
+          data ? JSON.parse(data).error : '删除失败'
+        );
       }
 
       router.push('/');
@@ -52,17 +76,10 @@ export default function PostActions({ post }) {
     }
   };
 
-  // 检查用户是否已登录且是作者
-  const isAuthor = session?.user?.username === post.author?.username;
-
-  if (!isAuthor) {
-    return null;
-  }
-
   return (
     <div 
       className="flex items-center gap-4"
-      onClick={(e) => e.stopPropagation()} // 阻止事件冒泡
+      onClick={(e) => e.stopPropagation()} 
     >
       <button
         type="button"

@@ -26,53 +26,47 @@ export async function GET(request, { params }) {
 // 更新文章
 export async function PUT(request, { params }) {
   try {
+    // 只验证用户是否登录
     const session = await getServerSession(authOptions);
     if (!session) {
       return new Response('Unauthorized', { status: 401 });
     }
 
-    const { title, content, keywords } = await request.json();
     await connectDB();
-
-    const post = await Post.findByIdAndUpdate(
+    const { title, content, keywords } = await request.json();
+    const updatedPost = await Post.findByIdAndUpdate(
       params.id,
       { title, content, keywords },
       { new: true }
     ).lean();
 
-    if (!post) {
-      return new Response('Post not found', { status: 404 });
+    if (!updatedPost) {
+      return NextResponse.json(
+        { error: '文章不存在' },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json(post);
+    return NextResponse.json(updatedPost);
   } catch (error) {
     console.error('Error in PUT /api/posts/[id]:', error);
-    return new Response('Internal Server Error', { status: 500 });
+    return NextResponse.json(
+      { error: error.message || '更新失败' },
+      { status: 500 }
+    );
   }
 }
 
 export async function DELETE(request, { params }) {
   try {
-    const cookieStore = cookies();
+    // 只验证用户是否登录
     const session = await getServerSession(authOptions);
-    
-    console.log('DELETE request details:', {
-      hasSession: !!session,
-      user: session?.user,
-      userId: session?.user?.id,
-      cookies: cookieStore.getAll()
-    });
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: '未登录' },
-        { status: 401 }
-      );
+    if (!session) {
+      return new Response('Unauthorized', { status: 401 });
     }
 
     await connectDB();
     const post = await Post.findById(params.id);
-    
     if (!post) {
       return NextResponse.json(
         { error: '文章不存在' },
@@ -81,11 +75,14 @@ export async function DELETE(request, { params }) {
     }
 
     await Post.findByIdAndDelete(params.id);
-    return NextResponse.json({ message: '删除成功' });
+    return NextResponse.json({ 
+      message: '删除成功'
+    });
+
   } catch (error) {
     console.error('Delete error:', error);
     return NextResponse.json(
-      { error: '删除失败' },
+      { error: error.message || '删除失败' },
       { status: 500 }
     );
   }

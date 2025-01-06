@@ -5,16 +5,11 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  important: true,
   theme: {
     extend: {
       fontSize: {
-        'base': '1rem',
-        'lg': '1.125rem',
-        'xl': '1.25rem',
-        '2xl': '1.5rem',
-        '3xl': '1.875rem',
-        '4xl': '2.25rem',
+        root: '16px',
+        base: ['16px', '1.5'],
       },
       colors: {
         'lesswrong-bg': 'var(--lesswrong-bg)',
