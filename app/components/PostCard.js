@@ -14,8 +14,20 @@ export default function PostCard({ id, title, content, createdAt, keywords }) {
 
   // 处理内容预览
   const getPreview = (content) => {
-    // 移除 Markdown 语法
-    const plainText = content.replace(/[#*`~>_-]/g, '').trim();
+    if (!content) return '';
+
+    // 移除所有 Markdown 语法
+    const plainText = content
+      // 移除图片语法
+      .replace(/!\[.*?\]\(.*?\)/g, '')
+      // 移除链接语法
+      .replace(/\[(.*?)\]\(.*?\)/g, '')
+      // 移除其他 Markdown 语法
+      .replace(/[#*`~>_-]/g, '')
+      // 移除多余空行和空格
+      .replace(/\n\s*\n/g, '\n')
+      .trim();
+
     // 限制预览长度
     return plainText.length > 200 ? plainText.slice(0, 200) + '...' : plainText;
   };
@@ -56,6 +68,7 @@ export default function PostCard({ id, title, content, createdAt, keywords }) {
             </div>
           )}
         </div>
+
         <p className="mt-4 text-lg text-lesswrong-text/90 line-clamp-2 leading-relaxed
           transition-colors duration-200 ease-out
           group-hover:text-lesswrong-text">

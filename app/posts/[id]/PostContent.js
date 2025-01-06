@@ -12,7 +12,8 @@ const markdownComponents = {
     return (
       <h1 
         id={id}
-        className="text-[2.5rem] font-serif font-bold mt-16 mb-8 text-lesswrong-text leading-[1.3]"
+        className="text-[1.8rem] sm:text-[2.5rem] font-serif font-bold mt-12 sm:mt-16 
+          mb-6 sm:mb-8 text-lesswrong-text leading-[1.3]"
       >
         {children}
       </h1>
@@ -23,7 +24,8 @@ const markdownComponents = {
     return (
       <h2 
         id={id}
-        className="text-[2rem] font-serif font-bold mt-12 mb-6 text-lesswrong-text leading-[1.3]"
+        className="text-[1.5rem] sm:text-[2rem] font-serif font-bold mt-10 sm:mt-12 
+          mb-4 sm:mb-6 text-lesswrong-text leading-[1.3]"
       >
         {children}
       </h2>
@@ -34,7 +36,8 @@ const markdownComponents = {
     return (
       <h3 
         id={id}
-        className="text-[1.5rem] font-serif font-bold mt-10 mb-4 text-lesswrong-text leading-[1.3]"
+        className="text-[1.3rem] sm:text-[1.5rem] font-serif font-bold mt-8 sm:mt-10 
+          mb-3 sm:mb-4 text-lesswrong-text leading-[1.3]"
       >
         {children}
       </h3>
@@ -54,8 +57,8 @@ const markdownComponents = {
     // 否则返回普通段落
     return (
       <p 
-        className="text-[1.3rem] leading-[1.9] tracking-[0.01em] 
-          text-lesswrong-text/90 my-6 font-[380]"
+        className="text-[1.1rem] sm:text-[1.3rem] leading-[1.8] sm:leading-[1.9] 
+          tracking-[0.01em] text-lesswrong-text/90 my-4 sm:my-6 font-[380]"
         {...props}
       >
         {children}
@@ -63,12 +66,14 @@ const markdownComponents = {
     );
   }),
   ul: ({children}) => (
-    <ul className="list-disc pl-8 my-6 space-y-3 text-[1.3rem] leading-[1.9] text-lesswrong-text/90">
+    <ul className="list-disc pl-4 sm:pl-8 my-6 space-y-3 text-[1.1rem] sm:text-[1.3rem] 
+      leading-[1.9] text-lesswrong-text/90">
       {children}
     </ul>
   ),
   ol: ({children}) => (
-    <ol className="list-decimal pl-8 my-6 space-y-3 text-[1.3rem] leading-[1.9] text-lesswrong-text/90">
+    <ol className="list-decimal pl-4 sm:pl-8 my-6 space-y-3 text-[1.1rem] sm:text-[1.3rem] 
+      leading-[1.9] text-lesswrong-text/90">
       {children}
     </ol>
   ),
@@ -76,8 +81,8 @@ const markdownComponents = {
     <li className="pl-2 leading-[1.9]">{children}</li>
   ),
   blockquote: ({children}) => (
-    <blockquote className="border-l-4 border-lesswrong-link/20 pl-8 my-10 
-      text-[1.25rem] leading-[1.8] italic text-lesswrong-text/80 font-serif">
+    <blockquote className="border-l-4 border-lesswrong-link/20 pl-4 sm:pl-8 my-10 
+      text-[1.1rem] sm:text-[1.25rem] leading-[1.8] italic text-lesswrong-text/80 font-serif">
       {children}
     </blockquote>
   ),
@@ -94,7 +99,7 @@ const markdownComponents = {
     </a>
   ),
   img: memo(({ src, alt, ...props }) => (
-    <span className="block my-10">
+    <span className="block my-10 w-full">
       <img
         src={src}
         alt={alt}
@@ -107,14 +112,26 @@ const markdownComponents = {
     <hr className="my-12 border-lesswrong-border" />
   ),
   code: ({children}) => (
-    <code className="px-1.5 py-0.5 bg-lesswrong-border/20 rounded text-[0.9em] font-mono">
+    <code className="px-1.5 py-0.5 bg-lesswrong-border/20 rounded text-[0.9em] 
+      font-mono break-words whitespace-pre-wrap mx-auto">
       {children}
     </code>
   ),
   pre: ({children}) => (
-    <pre className="bg-lesswrong-border/10 rounded-lg p-4 my-6 overflow-x-auto">
-      {children}
-    </pre>
+    <div className="w-full overflow-x-auto my-6 rounded-lg">
+      <pre className="bg-lesswrong-border/10 p-4 min-w-full text-[0.9em] 
+        whitespace-pre-wrap break-words mx-auto relative
+        sm:rounded-lg rounded-none">
+        {children}
+      </pre>
+    </div>
+  ),
+  table: ({children}) => (
+    <div className="w-full overflow-x-auto">
+      <table className="min-w-full my-6">
+        {children}
+      </table>
+    </div>
   ),
 };
 
@@ -153,8 +170,9 @@ export default function PostContent({ post, actions }) {
 
   return (
     <div className="relative" ref={contentRef}>
-      {/* 添加导航按钮 */}
-      <div className="fixed top-1/2 -translate-y-1/2 left-[calc(50%-600px)] right-[calc(50%-600px)] flex justify-between pointer-events-none">
+      {/* 导航按钮 */}
+      <div className="hidden lg:flex fixed top-1/2 -translate-y-1/2 left-[calc(50%-600px)] 
+        right-[calc(50%-600px)] justify-between pointer-events-none">
         <div className="w-24 flex items-center pointer-events-auto">
           {post.navigation?.prev && (
             <Link
@@ -219,11 +237,7 @@ export default function PostContent({ post, actions }) {
       </div>
 
       {/* 进度条 */}
-      <div 
-        className="fixed left-8 top-16 bottom-0 w-[2px] bg-transparent group"
-        onMouseEnter={() => setShowToc(true)}
-        onMouseLeave={() => setShowToc(false)}
-      >
+      <div className="fixed left-0 sm:left-8 top-16 bottom-0 w-[2px] bg-transparent group">
         <div className="absolute inset-0 bg-lesswrong-border/10" />
         <div 
           className="absolute top-0 left-0 w-full bg-lesswrong-link/90"
@@ -235,9 +249,9 @@ export default function PostContent({ post, actions }) {
         />
 
         {/* 目录 */}
-        <div className={`absolute left-8 top-4 w-64 bg-white/90 backdrop-blur-sm
-          rounded-lg shadow-lg border border-lesswrong-border/10 p-4
-          transform transition-all duration-300 origin-left
+        <div className={`absolute left-4 sm:left-8 top-4 w-[calc(100vw-2rem)] sm:w-64 
+          bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-lesswrong-border/10 
+          p-4 transform transition-all duration-300 origin-left
           ${showToc ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
         >
           <nav className="space-y-1">
@@ -261,9 +275,10 @@ export default function PostContent({ post, actions }) {
       </div>
 
       {/* 文章内容 */}
-      <article className="max-w-4xl mx-auto px-6 lg:px-8">
-        <header className="mb-16 text-center">
-          <h1 className="text-[3.2rem] font-serif font-bold text-lesswrong-text leading-[1.2] mb-6">
+      <div>
+        <header className="mb-8 sm:mb-16 text-center">
+          <h1 className="text-[2rem] sm:text-[3.2rem] font-serif font-bold 
+            text-lesswrong-text leading-[1.2] mb-4 sm:mb-6 break-words">
             {post.title}
           </h1>
           <div className="flex items-center justify-center gap-2 text-base text-lesswrong-meta">
@@ -297,15 +312,22 @@ export default function PostContent({ post, actions }) {
           )}
         </header>
 
-        <div className="prose prose-lg max-w-none mx-auto" style={{ maxWidth: '780px' }}>
-          <ReactMarkdown 
-            remarkPlugins={[remarkGfm]}
-            components={markdownComponents}
-          >
-            {post.content}
-          </ReactMarkdown>
+        <div className="prose prose-lg" 
+          style={{ 
+            wordWrap: 'break-word',
+            overflowWrap: 'break-word'
+          }}
+        >
+          <div className="px-4 sm:px-0">
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              components={markdownComponents}
+            >
+              {post.content}
+            </ReactMarkdown>
+          </div>
         </div>
-      </article>
+      </div>
     </div>
   );
 } 

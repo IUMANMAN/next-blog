@@ -93,20 +93,21 @@ export default async function PostPage({ params: { id } }) {
     };
 
     return (
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <ErrorBoundary fallback={<div>加载文章时出错</div>}>
-          <Suspense fallback={<PostLoading />}>
-            <div className="flex justify-between items-center mb-6">
-              <BackButton />
-              <PostActions post={simplifiedPost} />
-            </div>
-            <article>
-              <PostContent post={simplifiedPost} />
-            </article>
-            <PostNavigation navigation={simplifiedPost.navigation} />
-            <BackToTop />
-          </Suspense>
-        </ErrorBoundary>
+      <main className="min-h-screen pt-20">
+        <div className="max-w-[780px] mx-auto px-4">
+          <ErrorBoundary fallback={<div>加载文章时出错</div>}>
+            <Suspense fallback={<PostLoading />}>
+              <div className="flex justify-between items-center mb-6">
+                <BackButton />
+                <PostActions post={simplifiedPost} />
+              </div>
+              <article>
+                <PostContent post={simplifiedPost} />
+              </article>
+              <BackToTop />
+            </Suspense>
+          </ErrorBoundary>
+        </div>
       </main>
     );
   } catch (error) {
