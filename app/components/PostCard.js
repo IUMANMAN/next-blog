@@ -1,11 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 
-export default function PostCard({ id, title, content, createdAt, keywords }) {
-  const { data: session } = useSession();
-  
+export default function PostCard({ id, title, content, createdAt, keywords, author }) {
   // 格式化日期
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -18,17 +15,12 @@ export default function PostCard({ id, title, content, createdAt, keywords }) {
 
     // 移除所有 Markdown 语法
     const plainText = content
-      // 移除图片语法
       .replace(/!\[.*?\]\(.*?\)/g, '')
-      // 移除链接语法
       .replace(/\[(.*?)\]\(.*?\)/g, '')
-      // 移除其他 Markdown 语法
       .replace(/[#*`~>_-]/g, '')
-      // 移除多余空行和空格
       .replace(/\n\s*\n/g, '\n')
       .trim();
 
-    // 限制预览长度
     return plainText.length > 200 ? plainText.slice(0, 200) + '...' : plainText;
   };
 
@@ -52,7 +44,7 @@ export default function PostCard({ id, title, content, createdAt, keywords }) {
             transition-colors duration-200 group-hover:text-lesswrong-meta/80">
             <time>{formatDate(createdAt)}</time>
             <span>·</span>
-            <span>{session?.user?.name || 'Manman'}</span>
+            <span>{author?.username || 'my0sterick'}</span>
           </div>
           {keywords?.length > 0 && (
             <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">

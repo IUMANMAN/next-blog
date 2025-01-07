@@ -97,12 +97,22 @@ export default function Navbar({ isLoggedIn, posts, keywords }) {
       <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
         <div className="flex items-center gap-3">
           <MobileMenu posts={posts} keywords={keywords} />
-          <Link href="/" className="text-lg sm:text-xl font-bold text-lesswrong-text">
-            ManMan Blog
-          </Link>
+          <div className="flex items-center">
+            <Link href="/" className="text-lg sm:text-xl font-bold text-lesswrong-text leading-none">
+              ManMan Blog
+            </Link>
+            <span className="mx-4 sm:mx-3 text-lesswrong-meta"></span>
+            <Link
+              href="/about"
+              className="hidden xl:block text-lg text-lesswrong-text hover:text-lesswrong-link 
+                transition-colors duration-200 ml-4 leading-none"
+            >
+              关于我
+            </Link>
+          </div>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
           <div className="relative flex items-center" ref={searchRef}>
             <button
               onClick={toggleSearch}

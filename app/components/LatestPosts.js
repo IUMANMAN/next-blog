@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function LatestPosts({ posts }) {
   return (
-    <aside className="fixed left-[calc(50%-800px)] top-32 w-64 latest-posts-sidebar">
+    <aside className="fixed left-[calc(50%-750px)] top-32 w-64 latest-posts-sidebar">
       <h2 className="text-xl font-serif font-bold text-lesswrong-text mb-6">最新文章</h2>
       <div className="space-y-8">
         {posts.map(post => (

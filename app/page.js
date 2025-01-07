@@ -61,7 +61,7 @@ export default async function Home() {
     <div className="relative">
       <div className="hidden lg:block">
         <LatestPosts posts={sidebarPosts} />
-        <div className="fixed right-[calc(50%-800px)] top-32 w-64">
+        <div className="fixed right-[calc(50%-750px)] top-32 w-64">
           <KeywordCloud allKeywords={allKeywords} />
         </div>
       </div>

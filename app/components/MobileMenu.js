@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function MobileMenu({ posts, keywords }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,51 +76,63 @@ export default function MobileMenu({ posts, keywords }) {
               </button>
             </div>
 
-            <div className="px-6 py-4">
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-lesswrong-text mb-6 text-center">
-                  最新文章
-                </h3>
-                <div className="space-y-3 flex flex-col items-center">
-                  {posts.map(post => (
-                    <a
-                      key={post.id}
-                      href={`/posts/${post.id}`}
-                      className="block text-sm text-lesswrong-text hover:text-lesswrong-link
-                        transition-colors duration-200 text-center max-w-[90%]
-                        overflow-hidden text-ellipsis whitespace-nowrap"
-                      onClick={() => {
-                        toggleMenu();
-                        router.push(`/posts/${post.id}`);
-                      }}
-                    >
-                      {post.title}
-                    </a>
-                  ))}
+            <div className="px-6 py-4 flex flex-col h-[calc(100vh-73px)]">
+              <div className="flex-1">
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold text-lesswrong-text mb-6 text-center">
+                    最新文章
+                  </h3>
+                  <div className="space-y-3 flex flex-col items-center">
+                    {posts.map(post => (
+                      <a
+                        key={post.id}
+                        href={`/posts/${post.id}`}
+                        className="block text-sm text-lesswrong-text hover:text-lesswrong-link
+                          transition-colors duration-200 text-center max-w-[90%]
+                          overflow-hidden text-ellipsis whitespace-nowrap"
+                        onClick={() => {
+                          toggleMenu();
+                          router.push(`/posts/${post.id}`);
+                        }}
+                      >
+                        {post.title}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold text-lesswrong-text mb-6 text-center">
+                    热门关键词
+                  </h3>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {keywords.map((keyword, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-lesswrong-green-light text-lesswrong-link
+                          rounded-full transition-all duration-200 hover:bg-lesswrong-green-border
+                          cursor-pointer"
+                        onClick={() => {
+                          toggleMenu();
+                          router.push(`/search?q=${encodeURIComponent(keyword)}`);
+                        }}
+                      >
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-lesswrong-text mb-6 text-center
-                  ">
-                  热门关键词
-                </h3>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {keywords.map((keyword, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 text-sm bg-lesswrong-green-light text-lesswrong-link
-                        rounded-full transition-all duration-200 hover:bg-lesswrong-green-border
-                        cursor-pointer"
-                      onClick={() => {
-                        toggleMenu();
-                        router.push(`/search?q=${encodeURIComponent(keyword)}`);
-                      }}
-                    >
-                      {keyword}
-                    </span>
-                  ))}
-                </div>
+              <div className="pt-4">
+                <Link
+                  href="/about"
+                  className="block text-center text-lg font-medium text-lesswrong-text 
+                    hover:text-lesswrong-link transition-colors duration-200"
+                  onClick={toggleMenu}
+                >
+                  About Me
+                </Link>
               </div>
             </div>
           </div>
